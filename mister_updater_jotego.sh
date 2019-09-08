@@ -15,11 +15,11 @@
 
 # Copyright 2018-2019 Alessandro "Locutus73" Miele
 
-# You can download the latest version of this script from:
+# You can download the original version of this script from:
 # https://github.com/MiSTer-devel/Updater_script_MiSTer
 
 
-
+# Version 4 - 2019-09-08 - Changed to get only @Jotego cores
 # Version 3.3.1 - 2019-09-07 - Improved core directories creation; added NeoGeo xml download/update to ADDITIONAL_REPOSITORIES.
 # Version 3.3 - 2019-08-21 - Implemented CREATE_CORES_DIRECTORIES; when "true" (default value), the updater will create the core directory (i.e. /media/fat/Amiga for Minimig core, /media/fat/SNES for SNES core) the first time the core is downloaded.
 # Version 3.2 - 2019-08-21 - Implemented GOOD_CORES_URL for having a list of curated "good" cores.
@@ -75,11 +75,6 @@ CORE_CATEGORY_PATHS["console-cores"]="$BASE_PATH/_Console"
 CORE_CATEGORY_PATHS["arcade-cores"]="$BASE_PATH/_Arcade"
 CORE_CATEGORY_PATHS["service-cores"]="$BASE_PATH/_Utility"
 
-#Optional pipe "|" separated list of directories containing alternative arcade cores to be updated,
-#each alternative (hack/revision/whatever) arcade is a subdirectory with the name starting like the rbf core with an underscore prefix,
-#i.e. "/media/fat/_Arcade/_Arcade Hacks/_BurgerTime - hack/".
-ARCADE_ALT_PATHS="${CORE_CATEGORY_PATHS["arcade-cores"]}/_Arcade Hacks|${CORE_CATEGORY_PATHS["arcade-cores"]}/_Arcade Revisions"
-
 #Specifies if old files (cores, main MiSTer executable, menu, SD-Installer, etc.) will be deleted as part of an update.
 DELETE_OLD_FILES="true"
 
@@ -91,24 +86,6 @@ DOWNLOAD_NEW_CORES="true"
 
 #Specifies if the "Arcade-" prefix will be removed in local arcade cores.
 REMOVE_ARCADE_PREFIX="true"
-
-#A space separated list of filters for the online repositories;
-#each filter can be part of the repository name or a whole core category,
-#i.e. “C64 Minimig NES SNES arcade-cores” if you want the script to check only
-#for C64, Minimig, NES, SNES, and all arcade cores repositories making the whole
-#update process quicker;
-#if you use this option probably you want DOWNLOAD_NEW_CORES="true" so that you
-#can use this filter in order to setup a brand new empty SD with only the cores
-#you need, otherwise cores in the filter, but not on the SD won't be downloaded.
-REPOSITORIES_FILTER=""
-
-#Specifies if the cheats will be downloaded/updated from https://gamehacking.org/
-#"true" for checking for updates each time, "false" for disabling the function,
-#"once" for downloading cheats just once if not on the SD card (no further updating).
-UPDATE_CHEATS="once"
-
-#EXPERIMENTAL: specifies if the Kernel, the Linux filesystem and the bootloader will be updated; use it at your own risk!
-UPDATE_LINUX="true"
 
 #EXPERIMENTAL: specifies if the update process must be done with parallel processing; use it at your own risk!
 PARALLEL_UPDATE="false"
@@ -131,25 +108,17 @@ CREATE_CORES_DIRECTORIES="true"
 #any download will fail.
 ALLOW_INSECURE_SSL="true"
 CURL_RETRY="--connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5"
-MISTER_URL="https://github.com/MiSTer-devel/Main_MiSTer"
+MISTER_URL="https://github.com/eubrunosilva/Updater_script_MiSTer"
 SCRIPTS_PATH="Scripts"
 OLD_SCRIPTS_PATH="#Scripts"
 WORK_PATH="/media/fat/$SCRIPTS_PATH/.mister_updater"
 #Comment (or uncomment) next lines if you don't want (or want) to update/download from additional repositories (i.e. Scaler filters and Gameboy palettes) each time
 ADDITIONAL_REPOSITORIES=(
-	"https://github.com/MiSTer-devel/Filters_MiSTer/tree/master/Filters|txt|$BASE_PATH/Filters"
-	"https://github.com/MiSTer-devel/Gameboy_MiSTer/tree/master/palettes|gbp|$BASE_PATH/GameBoy"
-	"https://github.com/MiSTer-devel/Scripts_MiSTer|sh inc|$BASE_PATH/$SCRIPTS_PATH"
-	"https://github.com/bbond007/MiSTer_MidiLink/tree/master/INSTALL|sh inc|$BASE_PATH/$SCRIPTS_PATH"
-#	"https://github.com/MiSTer-devel/Fonts_MiSTer|pf|$BASE_PATH/font"
-	"https://github.com/MiSTer-devel/NeoGeo_MiSTer/tree/master/releases|xml|$BASE_PATH/NeoGeo"
 )
-CHEATS_URL="https://gamehacking.org/mister/"
-CHEAT_MAPPINGS="fds:NES gb:GameBoy gbc:GameBoy gen:Genesis gg:SMS nes:NES pce:TGFX16 sms:SMS snes:SNES"
 UNRAR_DEBS_URL="http://http.us.debian.org/debian/pool/non-free/u/unrar-nonfree"
 #Uncomment this if you want the script to sync the system date and time with a NTP server
 #NTP_SERVER="0.pool.ntp.org"
-AUTOREBOOT="true"
+AUTOREBOOT="false"
 REBOOT_PAUSE=0
 TEMP_PATH="/tmp"
 TO_BE_DELETED_EXTENSION="to_be_deleted"
@@ -206,11 +175,11 @@ case $? in
 esac
 if [ "$SSL_SECURITY_OPTION" == "" ]
 then
-	if [ "$(cat "$ORIGINAL_SCRIPT_PATH" | grep "^[^#].*")" == "curl $CURL_RETRY -ksLf https://github.com/MiSTer-devel/Updater_script_MiSTer/blob/master/mister_updater.sh?raw=true | bash -" ]
+	if [ "$(cat "$ORIGINAL_SCRIPT_PATH" | grep "^[^#].*")" == "curl $CURL_RETRY -ksLf https://github.com/eubrunosilva/Updater_script_MiSTer/blob/master/mister_updater_jotego.sh?raw=true | bash -" ]
 	then
 		echo "Downloading $(echo $ORIGINAL_SCRIPT_PATH | sed 's/.*\///g')"
 		echo ""
-		curl $CURL_RETRY $SSL_SECURITY_OPTION -L "https://github.com/MiSTer-devel/Updater_script_MiSTer/blob/master/update.sh?raw=true" -o "$ORIGINAL_SCRIPT_PATH"
+		curl $CURL_RETRY $SSL_SECURITY_OPTION -L "https://github.com/eubrunosilva/Updater_script_MiSTer/blob/master/update_jotego.sh?raw=true" -o "$ORIGINAL_SCRIPT_PATH"
 	fi
 fi
 
@@ -236,24 +205,12 @@ then
 	mkdir -p "${NEW_CORE_CATEGORY_PATHS[@]}"
 fi
 
-[ "${UPDATE_LINUX}" == "true" ] && SD_INSTALLER_URL="https://github.com/MiSTer-devel/SD-Installer-Win64_MiSTer"
-
-CORE_URLS=$SD_INSTALLER_URL$'\n'$MISTER_URL$'\n'$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$MISTER_URL/wiki"| awk '/(user-content-cores)|(user-content-computer-cores)/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer\)\|\(user-content-[a-z-]*\)')
+CORE_URLS=$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$MISTER_URL/wiki"| awk '/(user-content-cores)|(user-content-computer-cores)/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer\)\|\(user-content-[a-z-]*\)')
 CORE_CATEGORY="-"
-SD_INSTALLER_PATH=""
-REBOOT_NEEDED="false"
 CORE_CATEGORIES_FILTER=""
-if [ "$REPOSITORIES_FILTER" != "" ]
-then
-	CORE_CATEGORIES_FILTER="^\($( echo "$REPOSITORIES_FILTER" | sed 's/[ 	]\{1,\}/\\)\\|\\(/g' )\)$"
-	REPOSITORIES_FILTER="\(Main_MiSTer\)\|\(Menu_MiSTer\)\|\(SD-Installer-Win64_MiSTer\)\|\($( echo "$REPOSITORIES_FILTER" | sed 's/[ 	]\{1,\}/\\)\\|\\([\/_-]/g' )\)"
-fi
 
-GOOD_CORES=""
-if [ "$GOOD_CORES_URL" != "" ]
-then
-	GOOD_CORES=$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$GOOD_CORES_URL")
-fi
+
+
 
 function checkCoreURL {
 	echo "Checking $(echo $CORE_URL | sed 's/.*\///g' | sed 's/_MiSTer//gI')"
@@ -502,240 +459,6 @@ for CORE_URL in $CORE_URLS; do
 done
 wait
 
-function checkAdditionalRepository {
-	OLD_IFS="$IFS"
-	IFS="|"
-	PARAMS=($ADDITIONAL_REPOSITORY)
-	ADDITIONAL_FILES_URL="${PARAMS[0]}"
-	ADDITIONAL_FILES_EXTENSIONS="\($(echo ${PARAMS[1]} | sed 's/ \{1,\}/\\|/g')\)"
-	CURRENT_DIR="${PARAMS[2]}"
-	IFS="$OLD_IFS"
-	if [ ! -d "$CURRENT_DIR" ]
-	then
-		mkdir -p "$CURRENT_DIR"
-	fi
-	echo "Checking $(echo $ADDITIONAL_FILES_URL | sed 's/.*\///g' | awk '{ print toupper( substr( $0, 1, 1 ) ) substr( $0, 2 ); }')"
-	[ "${SSH_CLIENT}" != "" ] && echo "URL: $ADDITIONAL_FILES_URL"
-	if echo "$ADDITIONAL_FILES_URL" | grep -q "\/tree\/master\/"
-	then
-		ADDITIONAL_FILES_URL=$(echo "$ADDITIONAL_FILES_URL" | sed 's/\/tree\/master\//\/file-list\/master\//g')
-	else
-		ADDITIONAL_FILES_URL="$ADDITIONAL_FILES_URL/file-list/master"
-	fi
-	CONTENT_TDS=$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$ADDITIONAL_FILES_URL")
-	ADDITIONAL_FILE_DATETIMES=$(echo "$CONTENT_TDS" | awk '/class="age">/,/<\/td>/' | tr -d '\n' | sed 's/ \{1,\}/+/g' | sed 's/<\/td>/\n/g')
-	ADDITIONAL_FILE_DATETIMES=( $ADDITIONAL_FILE_DATETIMES )
-	for DATETIME_INDEX in "${!ADDITIONAL_FILE_DATETIMES[@]}"; do 
-		ADDITIONAL_FILE_DATETIMES[$DATETIME_INDEX]=$(echo "${ADDITIONAL_FILE_DATETIMES[$DATETIME_INDEX]}" | grep -o "[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}T[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}Z" )
-		if [ "${ADDITIONAL_FILE_DATETIMES[$DATETIME_INDEX]}" == "" ]
-		then
-			ADDITIONAL_FILE_DATETIMES[$DATETIME_INDEX]="${ADDITIONAL_FILE_DATETIMES[$((DATETIME_INDEX-1))]}"
-		fi
-	done
-	CONTENT_TDS=$(echo "$CONTENT_TDS" | awk '/class="content">/,/<\/td>/' | tr -d '\n' | sed 's/ \{1,\}/+/g' | sed 's/<\/td>/\n/g')
-	CONTENT_TD_INDEX=0
-	for CONTENT_TD in $CONTENT_TDS; do
-		ADDITIONAL_FILE_URL=$(echo "$CONTENT_TD" | grep -o "href=\(\"\|\'\)[a-zA-Z0-9%()./_-]*\.$ADDITIONAL_FILES_EXTENSIONS\(\"\|\'\)" | sed "s/href=//g" | sed "s/\(\"\|\'\)//g")
-		if [ "$ADDITIONAL_FILE_URL" != "" ]
-		then
-			ADDITIONAL_FILE_NAME=$(echo "$ADDITIONAL_FILE_URL" | sed 's/.*\///g' | sed 's/%20/ /g')
-			ADDITIONAL_ONLINE_FILE_DATETIME=${ADDITIONAL_FILE_DATETIMES[$CONTENT_TD_INDEX]}
-			if [ -f "$CURRENT_DIR/$ADDITIONAL_FILE_NAME" ]
-			then
-				ADDITIONAL_LOCAL_FILE_DATETIME=$(date -d "$(stat -c %y "$CURRENT_DIR/$ADDITIONAL_FILE_NAME" 2>/dev/null)" -u +"%Y-%m-%dT%H:%M:%SZ")
-			else
-				ADDITIONAL_LOCAL_FILE_DATETIME=""
-			fi
-			if [ "$ADDITIONAL_LOCAL_FILE_DATETIME" == "" ] || [[ "$ADDITIONAL_ONLINE_FILE_DATETIME" > "$ADDITIONAL_LOCAL_FILE_DATETIME" ]]
-			then
-				echo "Downloading $ADDITIONAL_FILE_NAME"
-				[ "${SSH_CLIENT}" != "" ] && echo "URL: https://github.com$ADDITIONAL_FILE_URL?raw=true"
-				mv "${CURRENT_DIR}/${ADDITIONAL_FILE_NAME}" "${CURRENT_DIR}/${ADDITIONAL_FILE_NAME}.${TO_BE_DELETED_EXTENSION}" > /dev/null 2>&1
-				if curl $CURL_RETRY $SSL_SECURITY_OPTION -L "https://github.com$ADDITIONAL_FILE_URL?raw=true" -o "$CURRENT_DIR/$ADDITIONAL_FILE_NAME"
-				then
-					rm "${CURRENT_DIR}/${ADDITIONAL_FILE_NAME}.${TO_BE_DELETED_EXTENSION}" > /dev/null 2>&1
-				else
-					echo "${ADDITIONAL_FILE_NAME} download failed"
-					echo "Restoring old ${ADDITIONAL_FILE_NAME} file"
-					rm "${CURRENT_DIR}/${ADDITIONAL_FILE_NAME}" > /dev/null 2>&1
-					mv "${CURRENT_DIR}/${ADDITIONAL_FILE_NAME}.${TO_BE_DELETED_EXTENSION}" "${CURRENT_DIR}/${ADDITIONAL_FILE_NAME}" > /dev/null 2>&1
-				fi
-				sync
-				echo ""
-			fi
-		fi
-		CONTENT_TD_INDEX=$((CONTENT_TD_INDEX+1))
-	done
-	echo ""
-}
-
-for ADDITIONAL_REPOSITORY in "${ADDITIONAL_REPOSITORIES[@]}"; do
-	[ "$PARALLEL_UPDATE" == "true" ] && { echo "$(checkAdditionalRepository)"$'\n' & } || checkAdditionalRepository
-done
-wait
-
-function checkCheat {
-	MAPPING_KEY=$(echo "${CHEAT_MAPPING}" | grep -o "^[^:]*")
-	MAPPING_VALUE=$(echo "${CHEAT_MAPPING}" | grep -o "[^:]*$")
-	MAX_VERSION=""
-	FILE_NAME=$(echo "${CHEAT_URLS}" | grep "mister_${MAPPING_KEY}_")
-	echo "Checking ${MAPPING_KEY^^}"
-	if [ "${FILE_NAME}" != "" ]
-	then
-		CHEAT_URL="${CHEATS_URL}${FILE_NAME}"
-		MAX_VERSION=$(echo "${FILE_NAME}" | grep -oE "[0-9]{8}")
-		CURRENT_LOCAL_VERSION=""
-		MAX_LOCAL_VERSION=""
-		for CURRENT_FILE in "${WORK_PATH}/mister_${MAPPING_KEY}_"*
-		do
-			if [ -f "${CURRENT_FILE}" ]
-			then
-				if echo "${CURRENT_FILE}" | grep -qE "mister_[^_]+_[0-9]{8}.zip"
-				then
-					CURRENT_LOCAL_VERSION=$(echo "${CURRENT_FILE}" | grep -oE '[0-9]{8}')
-					[ "${UPDATE_CHEATS}" == "once" ] && CURRENT_LOCAL_VERSION="99999999"
-					if [[ "${CURRENT_LOCAL_VERSION}" > "${MAX_LOCAL_VERSION}" ]]
-					then
-						MAX_LOCAL_VERSION=${CURRENT_LOCAL_VERSION}
-					fi
-					if [[ "${MAX_VERSION}" > "${CURRENT_LOCAL_VERSION}" ]] && [ "${DELETE_OLD_FILES}" == "true" ]
-					then
-						mv "${CURRENT_FILE}" "${CURRENT_FILE}.${TO_BE_DELETED_EXTENSION}" > /dev/null 2>&1
-					fi
-				fi
-			fi
-		done
-		if [[ "${MAX_VERSION}" > "${MAX_LOCAL_VERSION}" ]]
-		then
-			echo "Downloading ${FILE_NAME}"
-			[ "${SSH_CLIENT}" != "" ] && echo "URL: ${CHEAT_URL}"
-			if curl $CURL_RETRY $SSL_SECURITY_OPTION -L "${CHEAT_URL}" -o "${WORK_PATH}/${FILE_NAME}"
-			then
-				if [ ${DELETE_OLD_FILES} == "true" ]
-				then
-					echo "Deleting old mister_${MAPPING_KEY} files"
-					rm "${WORK_PATH}/mister_${MAPPING_KEY}_"*.${TO_BE_DELETED_EXTENSION} > /dev/null 2>&1
-				fi
-				mkdir -p "${BASE_PATH}/cheats/${MAPPING_VALUE}"
-				sync
-				echo "Extracting ${FILE_NAME}"
-				unzip -o "${WORK_PATH}/${FILE_NAME}" -d "${BASE_PATH}/cheats/${MAPPING_VALUE}" 1>&2
-				rm "${WORK_PATH}/${FILE_NAME}" > /dev/null 2>&1
-				touch "${WORK_PATH}/${FILE_NAME}" > /dev/null 2>&1
-			else
-				echo "${FILE_NAME} download failed"
-				rm "${WORK_PATH}/${FILE_NAME}" > /dev/null 2>&1
-				if [ ${DELETE_OLD_FILES} == "true" ]
-				then
-					echo "Restoring old mister_${MAPPING_KEY} files"
-					for FILE_TO_BE_RESTORED in "${WORK_PATH}/mister_${MAPPING_KEY}_"*.${TO_BE_DELETED_EXTENSION}
-					do
-					  mv "${FILE_TO_BE_RESTORED}" "${FILE_TO_BE_RESTORED%.${TO_BE_DELETED_EXTENSION}}" > /dev/null 2>&1
-					done
-				fi
-			fi
-			sync
-		fi
-	fi
-	echo ""
-}
-
-if [ "${UPDATE_CHEATS}" != "false" ]
-then
-	echo "Checking Cheats"
-	echo ""
-	CHEAT_URLS=$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "${CHEATS_URL}" | grep -oE '"mister_[^_]+_[0-9]{8}.zip"' | sed 's/"//g')
-	for CHEAT_MAPPING in ${CHEAT_MAPPINGS}; do
-		[ "$PARALLEL_UPDATE" == "true" ] && { echo "$(checkCheat)"$'\n' & } || checkCheat
-	done
-	wait
-fi
-
-if [ "$SD_INSTALLER_PATH" != "" ]
-then
-	echo "Linux system must be updated"
-	if [ ! -f "/media/fat/linux/unrar-nonfree" ]
-	then
-		UNRAR_DEB_URLS=$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$UNRAR_DEBS_URL" | grep -o '\"unrar[a-zA-Z0-9%./_+-]*_armhf\.deb\"' | sed 's/\"//g')
-		MAX_VERSION=""
-		MAX_RELEASE_URL=""
-		for RELEASE_URL in $UNRAR_DEB_URLS; do
-			CURRENT_VERSION=$(echo "$RELEASE_URL" | grep -o '_[a-zA-Z0-9.+-]*_' | sed 's/_//g')
-			if [[ "$CURRENT_VERSION" > "$MAX_VERSION" ]]
-			then
-				MAX_VERSION=$CURRENT_VERSION
-				MAX_RELEASE_URL=$RELEASE_URL
-			fi
-		done
-		echo "Downloading $UNRAR_DEBS_URL/$MAX_RELEASE_URL"
-		curl $SSL_SECURITY_OPTION -L "$UNRAR_DEBS_URL/$MAX_RELEASE_URL" -o "$TEMP_PATH/$MAX_RELEASE_URL"
-		echo "Extracting unrar-nonfree"
-		ORIGINAL_DIR=$(pwd)
-		cd "$TEMP_PATH"
-		rm data.tar.xz > /dev/null 2>&1
-		ar -x "$TEMP_PATH/$MAX_RELEASE_URL" data.tar.xz
-		cd "$ORIGINAL_DIR"
-		rm "$TEMP_PATH/$MAX_RELEASE_URL"
-		tar -xJf "$TEMP_PATH/data.tar.xz" --strip-components=3 -C "/media/fat/linux" ./usr/bin/unrar-nonfree
-		rm "$TEMP_PATH/data.tar.xz" > /dev/null 2>&1
-	fi
-	if [ -f "/media/fat/linux/unrar-nonfree" ] && [ -f "$SD_INSTALLER_PATH" ]
-	then
-		sync
-		if /media/fat/linux/unrar-nonfree t "$SD_INSTALLER_PATH"
-		then
-			if [ -d /media/fat/linux.update ]
-			then
-				rm -R "/media/fat/linux.update" > /dev/null 2>&1
-			fi
-			mkdir "/media/fat/linux.update"
-			if /media/fat/linux/unrar-nonfree x -y "$SD_INSTALLER_PATH" files/linux/* /media/fat/linux.update
-			then
-				echo ""
-				echo "======================================================================================"
-				echo "Hold your breath: updating the Kernel, the Linux filesystem, the bootloader and stuff."
-				echo "Stopping this will make your SD unbootable!"
-				echo ""
-				echo "If something goes wrong, please download the SD Installer from"
-				echo "$SD_INSTALLER_URL"
-				echo "and copy the content of the files/linux/ directory in the linux directory of the SD."
-				echo "Reflash the bootloader with the SD Installer if needed."
-				echo "======================================================================================"
-				echo ""
-				rm "$SD_INSTALLER_PATH" > /dev/null 2>&1
-				touch "$SD_INSTALLER_PATH"
-				sync
-				mv -f "/media/fat/linux.update/files/linux/linux.img" "/media/fat/linux/linux.img.new"
-				mv -f "/media/fat/linux.update/files/linux/"* "/media/fat/linux/"
-				rm -R "/media/fat/linux.update" > /dev/null 2>&1
-				sync
-				/media/fat/linux/updateboot
-				sync
-				mv -f "/media/fat/linux/linux.img.new" "/media/fat/linux/linux.img"
-				sync
-			else
-				rm -R "/media/fat/linux.update" > /dev/null 2>&1
-				sync
-			fi
-			REBOOT_NEEDED="true"
-		else
-			echo "Downloaded installer RAR is broken, deleting $SD_INSTALLER_PATH"
-			rm "$SD_INSTALLER_PATH" > /dev/null 2>&1
-		fi
-	fi
-fi
-
 echo "Done!"
-if [ $REBOOT_NEEDED == "true" ]
-then
-	if [ $AUTOREBOOT == "true" ]
-	then
-		echo "Rebooting in $REBOOT_PAUSE seconds"
-		sleep $REBOOT_PAUSE
-		reboot now
-	else
-		echo "You should reboot"
-	fi
-fi
 
 exit 0
