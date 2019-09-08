@@ -15,9 +15,10 @@
 
 # Copyright 2019 Alessandro "Locutus73" Miele
 
-# You can download the latest version of this script from:
+# You can download the original version of this script from:
 # https://github.com/MiSTer-devel/Updater_script_MiSTer
 
+# Version 3 - Changes for updating cores from @Jotego
 # Version 2.1.2 - 2019-08-16 - Minor refactoring by frederic-mahe, thank you very much.
 # Version 2.1.1 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
 # Version 2.1 - 2019-02-23 - CURL RETRY OPTIONS by wesclemens, now the script has a timeout and retry logic to prevent spotty connections causing the update to lockup; thank you very much.
@@ -28,7 +29,7 @@
 
 # ========= OPTIONS ==================
 URL="https://github.com"
-SCRIPT_URL="${URL}/MiSTer-devel/Updater_script_MiSTer/blob/master/mister_updater.sh"
+SCRIPT_URL="${URL}/eubrunosilva/Updater_script_MiSTer/blob/master/mister_updater_jotego.sh"
 CURL_RETRY="--connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5 --silent"
 
 # ========= ADVANCED OPTIONS =========
