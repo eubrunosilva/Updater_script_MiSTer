@@ -70,10 +70,8 @@ BASE_PATH="/media/fat"
 
 #Directories where all core categories will be downloaded.
 declare -A CORE_CATEGORY_PATHS
-CORE_CATEGORY_PATHS["cores"]="$BASE_PATH/_Computer"
-CORE_CATEGORY_PATHS["console-cores"]="$BASE_PATH/_Console"
 CORE_CATEGORY_PATHS["arcade-cores"]="$BASE_PATH/_Arcade"
-CORE_CATEGORY_PATHS["service-cores"]="$BASE_PATH/_Utility"
+
 
 #Specifies if old files (cores, main MiSTer executable, menu, SD-Installer, etc.) will be deleted as part of an update.
 DELETE_OLD_FILES="true"
@@ -97,7 +95,7 @@ GOOD_CORES_URL=""
 
 #Specifies if the core directory (i.e. /media/fat/Amiga for Minimig core, /media/fat/SNES for SNES core) has to be created
 #the first time the core is downloaded.
-CREATE_CORES_DIRECTORIES="true"
+CREATE_CORES_DIRECTORIES="false"
 
 #========= ADVANCED OPTIONS =========
 #ALLOW_INSECURE_SSL="true" will check if SSL certificate verification (see https://curl.haxx.se/docs/sslcerts.html )
@@ -109,8 +107,6 @@ CREATE_CORES_DIRECTORIES="true"
 ALLOW_INSECURE_SSL="true"
 CURL_RETRY="--connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5"
 MISTER_URL="https://github.com/eubrunosilva/Updater_script_MiSTer"
-SCRIPTS_PATH="Scripts"
-OLD_SCRIPTS_PATH="#Scripts"
 WORK_PATH="/media/fat/$SCRIPTS_PATH/.mister_updater"
 #Comment (or uncomment) next lines if you don't want (or want) to update/download from additional repositories (i.e. Scaler filters and Gameboy palettes) each time
 ADDITIONAL_REPOSITORIES=(
@@ -127,6 +123,7 @@ TO_BE_DELETED_EXTENSION="to_be_deleted"
 
 #========= CODE STARTS HERE =========
 
+
 ORIGINAL_SCRIPT_PATH="$0"
 if [ "$ORIGINAL_SCRIPT_PATH" == "bash" ]
 then
@@ -136,17 +133,6 @@ INI_PATH=${ORIGINAL_SCRIPT_PATH%.*}.ini
 if [ -f $INI_PATH ]
 then
 	eval "$(cat $INI_PATH | tr -d '\r')"
-fi
-
-if [ -d "${BASE_PATH}/${OLD_SCRIPTS_PATH}" ] && [ ! -d "${BASE_PATH}/${SCRIPTS_PATH}" ]
-then
-	mv "${BASE_PATH}/${OLD_SCRIPTS_PATH}" "${BASE_PATH}/${SCRIPTS_PATH}"
-	echo "Moved"
-	echo "${BASE_PATH}/${OLD_SCRIPTS_PATH}"
-	echo "to"
-	echo "${BASE_PATH}/${SCRIPTS_PATH}"
-	echo "please relaunch the script."
-	exit 3
 fi
 
 SSL_SECURITY_OPTION=""
@@ -205,12 +191,14 @@ then
 	mkdir -p "${NEW_CORE_CATEGORY_PATHS[@]}"
 fi
 
-CORE_URLS=$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$MISTER_URL/wiki"| awk '/(user-content-cores)|(user-content-computer-cores)/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer\)\|\(user-content-[a-z-]*\)')
+# CORE_URLS=$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$MISTER_URL/wiki"| awk '/(user-content-cores)|(user-content-computer-cores)/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer\)\|\(user-content-[a-z-]*\)')
+#CORE_URLS=$(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$MISTER_URL/wiki"| awk '/(user-content-cores)|(user-content-arcade-cores)/,/user-content-development/')
+CORE_URLS=("https://github.com/eubrunosilva/Updater_script_MiSTer/tree/master/releases")
 CORE_CATEGORY="-"
 CORE_CATEGORIES_FILTER=""
 
-
-
+echo $CORE_URLS
+sleep 10s
 
 function checkCoreURL {
 	echo "Checking $(echo $CORE_URL | sed 's/.*\///g' | sed 's/_MiSTer//gI')"
@@ -434,6 +422,7 @@ function checkCoreURL {
 }
 
 for CORE_URL in $CORE_URLS; do
+	echo "-----"
 	if [[ $CORE_URL == https://* ]]
 	then
 		if [ "$REPOSITORIES_FILTER" == "" ] || { echo "$CORE_URL" | grep -qi "$REPOSITORIES_FILTER";  } || { echo "$CORE_CATEGORY" | grep -qi "$CORE_CATEGORIES_FILTER";  }
